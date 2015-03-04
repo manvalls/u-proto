@@ -8,7 +8,7 @@ Su.define(Object.prototype,apply,function(data){
   for(j = 0;j < keys.length;j++){
     i = keys[j];
     
-    if( this[i] && this[i].constructor == Object &&
+    if( typeof this[i] == 'object' &&
         data[i] && data[i].constructor == Object ) this[i][apply](data[i]);
     else this[i] = data[i];
   }
