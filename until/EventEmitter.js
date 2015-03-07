@@ -9,7 +9,6 @@ Su.define(EventEmitter.prototype,until,function(event){
   var resolver;
   
   this[resolvers] = this[resolvers] || {};
-  
   if(resolver = this[resolvers][event]) return resolver.yielded;
   
   this.once(event,function(){

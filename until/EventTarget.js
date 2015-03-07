@@ -16,11 +16,9 @@ Su.define(EventTarget.prototype,until,function(event){
   var resolver;
   
   this[resolvers] = this[resolvers] || {};
-  
   if(resolver = this[resolvers][event]) return resolver.yielded;
   
   this.addEventListener(event,callback,false);
-  
   return (this[resolvers][event] = resolver = new Resolver()).yielded;
 });
 
