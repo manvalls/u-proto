@@ -6,25 +6,33 @@ var Su = require('u-su'),
     active = Su();
 
 exports.on = Su();
+exports.once = Su();
 exports.detach = Su();
 
-function* call(l,event,extra){
+Su.define(Object.prototype,exports.on,walk.wrap(function*(event,listener,extra){
   var e;
   
-  e = yield this[until](event);
-  while(l[active][event]){
-    walk(l,[e,extra],this);
-    e = yield this[until](event);
-  }
-  
-}
-
-Su.define(Object.prototype,exports.on,function(event,listener,extra){
   listener[active] = listener[active] || {};
   listener[active][event] = true;
   
-  walk(call,[listener,event,extra],this);
-});
+  e = yield this[until](event);
+  while(listener[active][event]){
+    walk(listener,[e,extra],this);
+    e = yield this[until](event);
+  }
+  
+}));
+
+Su.define(Object.prototype,exports.once,walk.wrap(function*(event,listener,extra){
+  var e;
+  
+  listener[active] = listener[active] || {};
+  listener[active][event] = true;
+  
+  e = yield this[until](event);
+  if(listener[active][event]) walk(listener,[e,extra],this);
+  
+}));
 
 Su.define(Object.prototype,exports.detach,function(event,listener){
   if(!(listener[active] && listener[active][event])) return;
