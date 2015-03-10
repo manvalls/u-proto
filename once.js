@@ -12,7 +12,7 @@ function Cbc(){
   this[active] = true;
 }
 
-Object.defineProperties(Cbc.prototype,'detach',{value: function(){
+Object.defineProperty(Cbc.prototype,'detach',{value: function(){
   this[active] = false;
 }});
 
@@ -29,7 +29,7 @@ Su.define(Object.prototype,once,function(){
       cbc = new Cbc();
   
   arguments[1] = cbc;
-  walk(callOnce,[cbc,arguments,event,listener]);
+  walk(callOnce,[cbc,arguments,event,listener],this);
   
   return cbc;
 });
