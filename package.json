@@ -5,6 +5,8 @@
   "main": "main.js",
   "dependencies": {
     "u-su": "",
+    "u-css": "",
+    
     "y-resolver": "",
     "y-walk": ""
   },

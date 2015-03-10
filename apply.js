@@ -1,4 +1,6 @@
 var Su = require('u-su'),
+    getKey,
+    
     apply = module.exports = Su();
 
 Su.define(Object.prototype,apply,function(data){
@@ -15,4 +17,23 @@ Su.define(Object.prototype,apply,function(data){
   
   return this;
 });
+
+if(global.CSSStyleDeclaration){
+  getKey = require('u-css/get-key');
+  
+  Su.define(CSSStyleDeclaration.prototype,apply,function(obj){
+    var keys = Object.keys(obj),
+        i,j,k;
+    
+    for(j = 0;j < keys.length;j++){
+      i = getKey(k = keys[j]);
+      if(!i) continue;
+      
+      this[i] = obj[k];
+    }
+    
+    return this;
+  });
+  
+}
 
