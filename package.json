@@ -1,12 +1,11 @@
 {
   "name": "u-proto",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Useful prototype extensions",
   "main": "main.js",
   "dependencies": {
     "u-su": "",
     "u-css": "",
-    
     "y-resolver": "",
     "y-walk": ""
   },
