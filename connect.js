@@ -1,2 +1,2 @@
 module.exports = require('u-su')();
-if(global.HTMLInputElement) require('./until/HTMLInputElement.js');
+if(global.HTMLInputElement) require('./connect/HTMLInputElement.js');
