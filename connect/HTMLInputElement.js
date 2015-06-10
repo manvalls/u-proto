@@ -13,6 +13,23 @@ function listener(e){
   
   switch(this.type){
     
+    case 'checkbox':
+    case 'radio':
+      nv = this.checked;
+      break;
+    
+    case 'date':
+    case 'datetime':
+    case 'datetime-local':
+    case 'month':
+      nv = this.valueAsDate;
+      break;
+    
+    case 'number':
+    case 'range':
+      nv = this.valueAsNumber;
+      break;
+    
     default:
       nv = this.value;
       break;
