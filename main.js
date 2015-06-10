@@ -5,3 +5,4 @@ exports.on = require('./on.js');
 exports.once = require('./once.js');
 exports.prefix = require('./prefix.js');
 exports.connect = require('./connect.js');
+exports.mirror = require('./mirror.js');

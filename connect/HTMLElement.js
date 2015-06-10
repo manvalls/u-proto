@@ -44,7 +44,7 @@ Su.define(HTMLElement.prototype,connect,function(obj,prop,f,that){
 
 function Connection(t,obj,prop,f,ft){
   
-  if(prop == null || typeof prop == 'function'){
+  if(typeof prop != 'string'){
     
     ft = f;
     f = prop;

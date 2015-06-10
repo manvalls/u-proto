@@ -6,6 +6,7 @@
   "dependencies": {
     "u-su": "",
     "u-css": "",
+    "u-elem": "",
     "y-resolver": "",
     "y-walk": ""
   },
