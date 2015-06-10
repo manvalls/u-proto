@@ -11,14 +11,14 @@ var Su = require('u-su'),
 function listener(e){
   var nv,i,obj,prop,conn,f,that;
   
-  nv = this.innerHTML;
-  
   for(i = 0;i < this[connections].length;i++){
     conn = this[connections][i];
     obj = conn[object];
     prop = conn[key];
     f = conn[func];
     that = conn[funcThat];
+    
+    nv = this[prop == 'innerHTML' ? 'innerHTML' : 'textContent'];
     
     if(f) obj[prop] = f.call(that,nv,obj[prop],obj);
     else obj[prop] = nv;
