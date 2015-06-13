@@ -1,5 +1,5 @@
 var Su = require('u-su'),
-    getKey,
+    getKey,getValue,
     
     apply = module.exports = Su();
 
@@ -20,16 +20,19 @@ Su.define(Object.prototype,apply,function(data){
 
 if(global.CSSStyleDeclaration){
   getKey = require('u-css/get-key');
+  getValue = require('u-css/get-value');
   
   Su.define(CSSStyleDeclaration.prototype,apply,function(obj){
     var keys = Object.keys(obj),
-        i,j,k;
+        i,j,k,v;
     
     for(j = 0;j < keys.length;j++){
+      
       i = getKey(k = keys[j]);
       if(!i) continue;
       
-      this[i] = obj[k];
+      this[i] = getValue(i,obj[k]) || '';
+      
     }
     
     return this;
