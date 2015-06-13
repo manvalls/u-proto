@@ -9,8 +9,6 @@ module.exports = mirror = Su();
 Su.define(Object.prototype,mirror,function(arr,prop,f,that){
   var obj;
   
-  console.log(arr);
-  
   if(!(arr instanceof Array)){
     
     obj = document.createTextNode('');
@@ -20,8 +18,6 @@ Su.define(Object.prototype,mirror,function(arr,prop,f,that){
     prop = arr;
     
   }else obj = elem(arr);
-  
-  console.log(arr);
   
   obj.connection = this[connect](obj,prop,f,that);
   
