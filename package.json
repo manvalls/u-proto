@@ -2,7 +2,6 @@
   "name": "u-proto",
   "version": "3.7.0",
   "description": "Useful prototype extensions",
-  "main": "main.js",
   "dependencies": {
     "u-su": "",
     "u-css": "",
