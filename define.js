@@ -1,11 +1,10 @@
-var Su = require('u-su'),
-    define = module.exports = Su();
+var define = module.exports = Symbol();
 
-Su.define(Object.prototype,define,function(obj,desc){
+Object.defineProperty(Object.prototype,define,{value: function(obj,desc){
   var keys,i,j,bag;
 
   if(typeof obj != 'object'){
-    bag = {};
+    bag = Object.create(null);
     bag[obj] = {};
 
     bag[obj].value = desc;
@@ -19,9 +18,9 @@ Su.define(Object.prototype,define,function(obj,desc){
     return bag;
   }
 
-  bag = {};
+  bag = Object.create(null);
   desc = desc || {};
-  keys = Object.keys(obj);
+  keys = Object.getOwnPropertyNames(obj).concat(Object.getOwnPropertySymbols(obj));
 
   for(j = 0;j < keys.length;j++){
     i = keys[j];
@@ -36,4 +35,4 @@ Su.define(Object.prototype,define,function(obj,desc){
 
   Object.defineProperties(this,bag);
   return bag;
-});
+}});

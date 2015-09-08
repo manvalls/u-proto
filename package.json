@@ -3,11 +3,16 @@
   "version": "4.1.1",
   "description": "Useful prototype extensions",
   "dependencies": {
-    "u-su": "",
-    "u-css": "",
-    "u-elem": "",
-    "y-resolver": "",
-    "y-walk": ""
+    "u-css": ""
+  },
+  "devDependencies": {
+    "coveralls": "^2",
+    "istanbul": "",
+    "jsdom": "^6.3.0",
+    "u-test": ""
+  },
+  "scripts": {
+    "test": "bash test.sh"
   },
   "repository": {
     "type": "git",
@@ -17,6 +22,5 @@
     "url": "https://github.com/manvalls/u-proto/issues"
   },
   "author": "Manuel Valls Fernández <manolo@vlrz.es>",
-  "license": "LGPL-3.0",
-  "scripts": {}
+  "license": "LGPL-3.0"
 }

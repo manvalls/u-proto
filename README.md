@@ -1,18 +1,24 @@
-# proto
+# proto  [![Build Status][travis-img]][travis-url] [![Coverage Status][cover-img]][cover-url]
 
 ## Sample usage
 
 ```javascript
-var walk = require('u-proto/walk'),
-    until = require('u-proto/until'),
-    EventEmitter = require('events').EventEmitter,
-    
-    emitter = new EventEmitter();
+var apply = require('u-proto/apply'),
+    define = require('u-proto/define'),
+    obj = {};
 
-emitter[walk](function*(){
-  yield this[until]('event');
-  console.log('event');
+obj[apply]({foo: 'bar'});
+console.log(obj.foo); // bar
+
+obj[define]({
+  one: 'two'
 });
 
-emitter.emit('event'); // event
+obj.one = 'three';
+console.log(obj.one); // two
 ```
+
+[travis-img]: https://travis-ci.org/manvalls/u-proto.svg?branch=master
+[travis-url]: https://travis-ci.org/manvalls/u-proto
+[cover-img]: https://coveralls.io/repos/manvalls/u-proto/badge.svg?branch=master&service=github
+[cover-url]: https://coveralls.io/github/manvalls/u-proto?branch=master
