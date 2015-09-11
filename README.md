@@ -39,7 +39,7 @@ document.body.appendChild(document.createElement('br'));
 document.body.appendChild(button);
 ```
 
-The `apply` method copies properties from one object to another recursively. When using `y-setter`'s `Getter`s, a connection will be established. When using `Setter`s, if the object has an `addEventListener` method it will be used to update the value of the `Setter` accordingly.
+The `apply` method copies properties from one object to another recursively, applying prefixes if necessary when dealing with `CSSStyleDeclaration`s. When using `y-setter`'s `Getter`s, a connection will be established. When using `Setter`s, if the object has an `addEventListener` method it will be used to update the value of the `Setter` accordingly.
 
 `Hybrid`s can be used to maintain a double binding. Connections can be terminated by reassigning a property via `apply` or by passing a `detacher` `Collection` as the second argument, to which the connections will be added.
 
