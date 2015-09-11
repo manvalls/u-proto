@@ -3,13 +3,16 @@
   "version": "5.0.0",
   "description": "Useful prototype extensions",
   "dependencies": {
-    "u-css": ""
+    "u-css": "",
+    "y-setter": ""
   },
   "devDependencies": {
     "coveralls": "^2",
     "istanbul": "",
     "jsdom": "^6.3.0",
-    "u-test": ""
+    "u-test": "",
+    "detacher": "",
+    "y-timers": ""
   },
   "scripts": {
     "test": "bash test.sh"
