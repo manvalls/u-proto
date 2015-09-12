@@ -18,24 +18,37 @@ var Setter = require('y-setter'),
 
 Object.prototype[define](apply,function(data,c){
   var keys = Object.keys(data),
-      i,j,conn;
+      i,j,conn,
+      aD,dD;
 
   for(j = 0;j < keys.length;j++){
     i = keys[j];
 
     if(this[setters] && this[setters].has(i)){
+
       this[setters].delete(i);
+
       if(!this[setters].size){
         delete this[setters];
         detach(this);
+        dD = !this[connections];
       }
+
     }
 
     if(this[connections] && this[connections].has(i)){
+
       this[connections].get(i).detach();
       this[connections].delete(i);
-      if(!this[connections].size) delete this[connections];
+
+      if(!this[connections].size){
+        delete this[connections];
+        dD = dD || !this[setters];
+      }
+
     }
+
+    if(dD && this.removeEventListener) this.removeEventListener('destruction',onDestruction,false);
 
     if(!data[i]){
       this[i] = data[i];
@@ -52,19 +65,30 @@ Object.prototype[define](apply,function(data,c){
       if(!this[setters]){
         this[setters] = new Map();
         attach(this);
+        aD = !this[connections];
       }
 
       this[setters].set(i,data[i]);
+
     }
 
     if(data[i][Getter]){
       conn = data[i].connect(this,i);
       if(c) c.add(conn);
 
+      if(!this[connections]){
+        this[connections] = new Map();
+        aD = aD || !this[setters];
+      }
+
       this[connections] = this[connections] || new Map();
       this[connections].set(i,conn);
+
+      if(aD && this.addEventListener) this.addEventListener('destruction',onDestruction,false);
       continue;
     }
+
+    if(aD && this.addEventListener) this.addEventListener('destruction',onDestruction,false);
 
     if(data[i][Setter]) this[i] = data[i].value;
     else this[i] = data[i];
@@ -73,6 +97,21 @@ Object.prototype[define](apply,function(data,c){
 
   return this;
 });
+
+function onDestruction(){
+  var conn;
+
+  if(this[setters]){
+    delete this[setters];
+    detach(this);
+  }
+
+  if(this[connections]){
+    for(conn of this[connections].values()) conn.detach();
+    delete this[connections];
+  }
+
+}
 
 function listener(){
   var s = this[setters];

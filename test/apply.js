@@ -102,6 +102,30 @@ t('apply',function(){
     h2.value = true;
     assert.strictEqual(i.checked,false);
 
+    i[apply]({checked: h2, h: h});
+    assert.strictEqual(i.checked,true);
+    assert.strictEqual(i.h,true);
+
+    i.click();
+    yield wait(10);
+
+    assert.strictEqual(i.checked,false);
+    assert.strictEqual(h2.value,false);
+    assert.strictEqual(i.h,true);
+
+    h.value = false;
+    assert.strictEqual(i.h,false);
+
+    i.dispatchEvent(new Event('destruction'));
+
+    i.click();
+    yield wait(10);
+
+    assert.strictEqual(i.checked,true);
+    assert.strictEqual(h2.value,false);
+
+    h.value = true;
+    assert.strictEqual(i.h,false);
   });
 
   t('CSSStyleDeclaration',function(){
