@@ -60,7 +60,7 @@ Object.prototype[define](apply,function(data,c){
       continue;
     }
 
-    if(data[i][Setter] && this.addEventListener){
+    if(Setter.is(data[i]) && this.addEventListener){
 
       if(!this[setters]){
         this[setters] = new Map();
@@ -72,7 +72,7 @@ Object.prototype[define](apply,function(data,c){
 
     }
 
-    if(data[i][Getter]){
+    if(Getter.is(data[i])){
       conn = data[i].connect(this,i);
       if(c) c.add(conn);
 
@@ -90,7 +90,7 @@ Object.prototype[define](apply,function(data,c){
 
     if(aD && this.addEventListener) this.addEventListener('destruction',onDestruction,false);
 
-    if(data[i][Setter]) this[i] = data[i].value;
+    if(Setter.is(data[i])) this[i] = data[i].value;
     else this[i] = data[i];
 
   }
@@ -157,7 +157,7 @@ if(global.CSSStyleDeclaration){
         continue;
       }
 
-      if(data[i][Getter]){
+      if(Getter.is(data[i])){
         conn = data[i].watch(watcher,this,i);
         if(c) c.add(conn);
 
