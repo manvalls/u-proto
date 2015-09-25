@@ -15,6 +15,11 @@ t('define',function(){
         [s]: obj
       });
 
+      obj[define]({
+        foo: '',
+        [s]: null
+      });
+
       obj.foo = 'foo';
       delete obj[s];
 

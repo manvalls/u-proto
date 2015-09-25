@@ -14,7 +14,9 @@ Object.defineProperty(Object.prototype,define,{value: function(obj,desc){
     bag[obj].configurable = desc.configurable || false;
     bag[obj].writable = desc.writable || false;
 
-    Object.defineProperties(this,bag);
+    try{ Object.defineProperties(this,bag); }
+    catch(e){}
+
     return bag;
   }
 
@@ -33,6 +35,8 @@ Object.defineProperty(Object.prototype,define,{value: function(obj,desc){
     bag[i] = d;
   }
 
-  Object.defineProperties(this,bag);
+  try{ Object.defineProperties(this,bag); }
+  catch(e){}
+  
   return bag;
 }});
