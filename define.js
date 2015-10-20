@@ -1,7 +1,7 @@
 var define = module.exports = Symbol();
 
 Object.defineProperty(Object.prototype,define,{value: function(obj,desc){
-  var keys,i,j,bag;
+  var keys,i,j,d,bag;
 
   if(typeof obj != 'object'){
     bag = Object.create(null);
@@ -37,6 +37,6 @@ Object.defineProperty(Object.prototype,define,{value: function(obj,desc){
 
   try{ Object.defineProperties(this,bag); }
   catch(e){}
-  
+
   return bag;
 }});
