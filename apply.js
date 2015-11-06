@@ -5,6 +5,7 @@ var Setter = require('y-setter'),
     apply = module.exports = Symbol(),
     setters = Symbol(),
     connections = Symbol(),
+    observer = Symbol(),
 
     events = [
       'input','change','submit','reset',
@@ -127,11 +128,28 @@ function digest(s,that){
 function attach(that){
   var i;
   for(i = 0;i < events.length;i++) that.addEventListener(events[i],listener,false);
+
+  if(global.MutationObserver){
+    that[observer] = new MutationObserver(listener.bind(that));
+    that[observer].observe(that,{
+      childList: true,
+      attributes: true,
+      characterData: true,
+      subtree: true
+    });
+  }
+
 }
 
 function detach(that){
   var i;
   for(i = 0;i < events.length;i++) that.removeEventListener(events[i],listener,false);
+
+  if(that[observer]){
+    that[observer].disconnect();
+    delete that[observer];
+  }
+
 }
 
 if(global.CSSStyleDeclaration){

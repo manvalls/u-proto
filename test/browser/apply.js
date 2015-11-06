@@ -1,5 +1,3 @@
-Object.setPrototypeOf(global,require('jsdom').jsdom().defaultView);
-
 var t = require('u-test'),
     assert = require('assert'),
     wait = require('y-timers/wait'),
@@ -9,7 +7,7 @@ var t = require('u-test'),
     Hybrid = Setter.Hybrid,
 
     Collection = require('detacher/collection'),
-    apply = require('../apply.js');
+    apply = require('../../apply.js');
 
 t('apply',function(){
 
@@ -70,6 +68,7 @@ t('apply',function(){
 
     i.type = 'checkbox';
     h.value = false;
+    document.body.appendChild(i);
 
     i[apply]({checked: h});
     assert.strictEqual(i.checked,false);
@@ -126,6 +125,23 @@ t('apply',function(){
 
     h.value = true;
     assert.strictEqual(i.h,false);
+  });
+
+  t('HTMLDivElement',function*(){
+    var span = document.createElement('span'),
+        width = new Hybrid(),
+        w1;
+
+    span[apply]({ offsetWidth: width });
+    span.textContent = 'foo';
+    document.body.appendChild(span);
+    yield wait(10);
+
+    w1 = width.value;
+    span.textContent += 'bar';
+    yield wait(10);
+    
+    assert(width.value > w1);
   });
 
   t('CSSStyleDeclaration',function(){
