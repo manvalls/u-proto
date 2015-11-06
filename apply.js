@@ -6,12 +6,14 @@ var Setter = require('y-setter'),
     setters = Symbol(),
     connections = Symbol(),
     observer = Symbol(),
+    lbind = Symbol(),
 
     events = [
       'input','change','submit','reset',
       'keydown','keyup','keypress',
       'click','mousedown','mouseup','mouseover','mouseout',
-      'resize','focus','blur',
+      'resize','focus','blur','scroll',
+      'animationstart','animationend','animationiteration','transitionend',
       'digestion'
     ],
 
@@ -126,24 +128,44 @@ function digest(s,that){
 }
 
 function attach(that){
-  var i;
-  for(i = 0;i < events.length;i++) that.addEventListener(events[i],listener,false);
+  var i,bind;
 
-  if(global.MutationObserver){
-    that[observer] = new MutationObserver(listener.bind(that));
+  for(i = 0;i < events.length;i++) that.addEventListener(events[i],listener,false);
+  if(global.addEventListener){
+    bind = bind || listener.bind(that);
+    that[lbind] = bind;
+    for(i = 0;i < events.length;i++) global.addEventListener(events[i],bind,false);
+  }
+
+  if(global.MutationObserver && that instanceof global.Node){
+    bind = bind || listener.bind(that);
+    that[observer] = new MutationObserver(bind);
+
     that[observer].observe(that,{
       childList: true,
       attributes: true,
       characterData: true,
       subtree: true
     });
+
+    if(global.document && global.document.body instanceof global.Node)
+      that[observer].observe(global.document.body,{
+        childList: true,
+        attributes: true,
+        characterData: true,
+        subtree: true
+      });
+
   }
 
 }
 
 function detach(that){
   var i;
+
   for(i = 0;i < events.length;i++) that.removeEventListener(events[i],listener,false);
+  if(that[lbind]) for(i = 0;i < events.length;i++)
+    global.removeEventListener(events[i],that[lbind],false);
 
   if(that[observer]){
     that[observer].disconnect();
