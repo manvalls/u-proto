@@ -7,7 +7,7 @@ var t = require('u-test'),
     Hybrid = Setter.Hybrid,
 
     Collection = require('detacher/collection'),
-    apply = require('../../apply.js');
+    apply = require('../apply.js');
 
 t('apply',function(){
 
@@ -140,7 +140,7 @@ t('apply',function(){
     w1 = width.value;
     span.textContent += 'bar';
     yield wait(10);
-    
+
     assert(width.value > w1);
   });
 

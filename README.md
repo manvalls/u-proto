@@ -1,4 +1,4 @@
-# proto  [![Build Status][travis-img]][travis-url] [![Coverage Status][cover-img]][cover-url]
+# proto  [![Build Status][ci-img]][ci-url] [![Coverage Status][cover-img]][cover-url]
 
 ## apply
 
@@ -75,7 +75,7 @@ navigator[prefix]('getUserMedia',[
 
 Automatically guesses the correct prefix for a given property of a given object. The first argument is the name of the property and the second the list of arguments with which it will be called. If the second argument is not present, the value of the property will be returned instead.
 
-[travis-img]: https://travis-ci.org/manvalls/u-proto.svg?branch=master
-[travis-url]: https://travis-ci.org/manvalls/u-proto
+[ci-img]: https://circleci.com/gh/manvalls/u-proto.svg?style=shield
+[ci-url]: https://circleci.com/gh/manvalls/u-proto
 [cover-img]: https://coveralls.io/repos/manvalls/u-proto/badge.svg?branch=master&service=github
 [cover-url]: https://coveralls.io/github/manvalls/u-proto?branch=master
