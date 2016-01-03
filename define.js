@@ -14,8 +14,8 @@ Object.defineProperty(Object.prototype,define,{value: function(obj,desc){
     bag[obj].configurable = desc.configurable || false;
     bag[obj].writable = desc.writable || false;
 
-    try{ Object.defineProperties(this,bag); }
-    catch(e){}
+    try{ Object.defineProperty(this,obj,bag[obj]); }
+    catch(e){ }
 
     return bag;
   }
@@ -32,11 +32,11 @@ Object.defineProperty(Object.prototype,define,{value: function(obj,desc){
     d.configurable = desc.configurable || false;
     if('writable' in d) d.writable = desc.writable || false;
 
+    try{ Object.defineProperty(this,i,d); }
+    catch(e){ }
+    
     bag[i] = d;
   }
-
-  try{ Object.defineProperties(this,bag); }
-  catch(e){}
 
   return bag;
 }});
