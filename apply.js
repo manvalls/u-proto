@@ -6,7 +6,6 @@ var Setter = require('y-setter'),
     setters = Symbol(),
     connections = Symbol(),
     observer = Symbol(),
-    lbind = Symbol(),
 
     events = [
       'input','change','submit','reset',
@@ -53,12 +52,7 @@ Object.prototype[define](apply,function(data,c){
 
     if(dD && this.removeEventListener) this.removeEventListener('destruction',onDestruction,false);
 
-    if(!data[i]){
-      this[i] = data[i];
-      continue;
-    }
-
-    if(typeof this[i] == 'object' && data[i].constructor == Object){
+    if(data[i] && typeof this[i] == 'object' && data[i].constructor == Object){
       this[i][apply](data[i],c);
       continue;
     }
@@ -76,9 +70,10 @@ Object.prototype[define](apply,function(data,c){
     }
 
     if(Getter.is(data[i])){
-      conn = data[i].connect(this,i);
-      if(c) c.add(conn);
+      if(Setter.is(this[i])) conn = data[i].connect(this[i]);
+      else conn = data[i].connect(this,i);
 
+      if(c) c.add(conn);
       if(!this[connections]){
         this[connections] = new Map();
         aD = aD || !this[setters];
@@ -94,6 +89,7 @@ Object.prototype[define](apply,function(data,c){
     if(aD && this.addEventListener) this.addEventListener('destruction',onDestruction,false);
 
     if(Setter.is(data[i])) this[i] = data[i].value;
+    else if(Setter.is(this[i])) this[i].value = data[i];
     else this[i] = data[i];
 
   }
@@ -131,11 +127,6 @@ function attach(that){
   var i,bind;
 
   for(i = 0;i < events.length;i++) that.addEventListener(events[i],listener,false);
-  if(global.addEventListener){
-    bind = bind || listener.bind(that);
-    that[lbind] = bind;
-    for(i = 0;i < events.length;i++) global.addEventListener(events[i],bind,false);
-  }
 
   if(global.MutationObserver && that instanceof global.Node){
     bind = bind || listener.bind(that);
@@ -148,14 +139,6 @@ function attach(that){
       subtree: true
     });
 
-    if(global.document && global.document.body instanceof global.Node)
-      that[observer].observe(global.document.body,{
-        childList: true,
-        attributes: true,
-        characterData: true,
-        subtree: true
-      });
-
   }
 
 }
@@ -164,8 +147,6 @@ function detach(that){
   var i;
 
   for(i = 0;i < events.length;i++) that.removeEventListener(events[i],listener,false);
-  if(that[lbind]) for(i = 0;i < events.length;i++)
-    global.removeEventListener(events[i],that[lbind],false);
 
   if(that[observer]){
     that[observer].disconnect();
