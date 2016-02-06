@@ -7,8 +7,8 @@
     "y-setter": "^5.1.0"
   },
   "devDependencies": {
-    "detacher": "^1.6.1",
-    "u-test": "^3.1.12",
+    "detacher": "^1.6.2",
+    "u-test": "^3.6.6",
     "y-timers": "^1.1.1"
   },
   "scripts": {

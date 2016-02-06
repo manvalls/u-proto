@@ -179,4 +179,38 @@ t('apply',function(){
     assert.strictEqual(div.style.color,'black');
   });
 
+  t('Object with setters and getters',function(){
+    var setter = new Setter(),
+        setter2 = new Setter(),
+        col = new Collection(),
+        obj = {
+          setter: new Setter(),
+          getter: setter.getter
+        };
+
+    obj[apply]({
+      setter: 5
+    });
+
+    assert.strictEqual(obj.setter.value,5);
+
+    obj[apply]({
+      getter: setter2,
+      setter: setter2.getter
+    },col);
+
+    setter.value = 'foo';
+    assert.strictEqual(setter2.value,'foo');
+    assert.strictEqual(obj.setter.value,'foo');
+    col.detach();
+    setter.value = 'bar';
+    assert.strictEqual(setter2.value,'foo');
+
+    obj[apply]({
+      foo: setter
+    });
+
+    assert.strictEqual(obj.foo,'bar');
+  });
+
 });

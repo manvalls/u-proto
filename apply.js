@@ -26,14 +26,19 @@ Object.prototype[define](apply,function(data,c){
   for(j = 0;j < keys.length;j++){
     i = keys[j];
 
+    if(data[i] && data[i].constructor == Object && typeof this[i] == 'object'){
+      this[i][apply](data[i],c);
+      continue;
+    }
+
     if(this[setters] && this[setters].has(i)){
 
       this[setters].delete(i);
 
       if(!this[setters].size){
+        dD = !this[connections];
         delete this[setters];
         detach(this);
-        dD = !this[connections];
       }
 
     }
@@ -44,28 +49,40 @@ Object.prototype[define](apply,function(data,c){
       this[connections].delete(i);
 
       if(!this[connections].size){
+        dD = !this[setters];
         delete this[connections];
-        dD = dD || !this[setters];
       }
 
     }
 
     if(dD && this.removeEventListener) this.removeEventListener('destruction',onDestruction,false);
 
-    if(data[i] && typeof this[i] == 'object' && data[i].constructor == Object){
-      this[i][apply](data[i],c);
-      continue;
-    }
+    if(Setter.is(data[i])){
 
-    if(Setter.is(data[i]) && this.addEventListener){
+      if(Getter.is(this[i])){
 
-      if(!this[setters]){
-        this[setters] = new Map();
-        attach(this);
-        aD = !this[connections];
-      }
+        conn = this[i].connect(data[i]);
+        if(c) c.add(conn);
 
-      this[setters].set(i,data[i]);
+        if(!this[connections]){
+          this[connections] = new Map();
+          aD = !this[setters];
+        }
+
+        this[connections].set(i,conn);
+
+      }else if(this.addEventListener){
+
+        if(!this[setters]){
+          this[setters] = new Map();
+          aD = !this[connections];
+          attach(this);
+        }
+
+        this[setters].set(i,data[i]);
+        this[i] = data[i].value;
+
+      }else this[i] = data[i].value;
 
     }
 
@@ -79,17 +96,13 @@ Object.prototype[define](apply,function(data,c){
         aD = aD || !this[setters];
       }
 
-      this[connections] = this[connections] || new Map();
       this[connections].set(i,conn);
-
-      if(aD && this.addEventListener) this.addEventListener('destruction',onDestruction,false);
-      continue;
     }
 
     if(aD && this.addEventListener) this.addEventListener('destruction',onDestruction,false);
+    if(Getter.is(data[i]) || Setter.is(data[i])) continue;
 
-    if(Setter.is(data[i])) this[i] = data[i].value;
-    else if(Setter.is(this[i])) this[i].value = data[i];
+    if(Setter.is(this[i])) this[i].value = data[i];
     else this[i] = data[i];
 
   }
