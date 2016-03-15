@@ -5,11 +5,11 @@
 ```javascript
 var Setter = require('y-setter'),
     apply = require('u-proto/apply'),
-    Collection = require('detacher/collection'),
+    Detacher = require('detacher'),
 
     setter = new Setter(),
     getter = setter.getter,
-    c = new Collection(),
+    c = new Detacher(),
 
     check = document.createElement('input'),
     info = document.createElement('span'),
@@ -41,7 +41,7 @@ document.body.appendChild(button);
 
 The `apply` method copies properties from one object to another recursively, applying prefixes if necessary when dealing with `CSSStyleDeclaration`s. When using `y-setter`'s `Getter`s, a connection will be established. When using `Setter`s, if the object has an `addEventListener` method it will be used to update the value of the `Setter` accordingly.
 
-`Hybrid`s can be used to maintain a double binding. Connections can be terminated by reassigning a property via `apply` or by passing a `detacher` `Collection` as the second argument, to which the connections will be added. Values are updated on common events such as `click` and `input`, as well as on the `digestion` event. You may dispatch any of these events manually if you want to force the update process.
+`Hybrid`s can be used to maintain a double binding. Connections can be terminated by reassigning a property via `apply` or by passing a `Detacher` as the second argument, to which the connections will be added. Values are updated on common events such as `click` and `input`, as well as on the `digestion` event. You may dispatch any of these events manually if you want to force the update process.
 
 ## define
 

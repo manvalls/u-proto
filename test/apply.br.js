@@ -6,7 +6,8 @@ var t = require('u-test'),
     Getter = Setter.Getter,
     Hybrid = Setter.Hybrid,
 
-    Collection = require('detacher/collection'),
+    Detacher = require('detacher'),
+    detacher = require('u-elem/detacher'),
     apply = require('../apply.js');
 
 t('apply',function(){
@@ -37,7 +38,7 @@ t('apply',function(){
       var obj = {},
           s = new Setter(),
           g = s.getter,
-          c = new Collection();
+          c = new Detacher();
 
       s.value = 'bar';
       obj[apply]({foo: g},c);
@@ -64,7 +65,7 @@ t('apply',function(){
     var i = document.createElement('input'),
         h = new Hybrid(),
         h2 = new Hybrid(),
-        c = new Collection();
+        c = new Detacher();
 
     i.type = 'checkbox';
     h.value = false;
@@ -115,10 +116,10 @@ t('apply',function(){
     h.value = false;
     assert.strictEqual(i.h,false);
 
-    i.dispatchEvent(new Event('destruction'));
+    i[detacher].detach();
 
     i.click();
-    yield wait(10);
+    yield wait(100);
 
     assert.strictEqual(i.checked,true);
     assert.strictEqual(h2.value,false);
@@ -148,7 +149,7 @@ t('apply',function(){
     var div = document.createElement('div'),
         h = new Hybrid(),
         h2 = new Hybrid(),
-        c = new Collection();
+        c = new Detacher();
 
     h.value = 'black';
 
@@ -182,7 +183,7 @@ t('apply',function(){
   t('Object with setters and getters',function(){
     var setter = new Setter(),
         setter2 = new Setter(),
-        col = new Collection(),
+        col = new Detacher(),
         obj = {
           setter: new Setter(),
           getter: setter.getter

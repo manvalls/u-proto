@@ -1,5 +1,6 @@
 var Setter = require('y-setter'),
     Getter = Setter.Getter,
+    detacher = require('u-elem/detacher'),
 
     define = require('./define.js'),
     apply = module.exports = Symbol(),
@@ -55,7 +56,7 @@ Object.prototype[define](apply,function(data,c){
 
     }
 
-    if(dD && this.removeEventListener) this.removeEventListener('destruction',onDestruction,false);
+    if(dD && this.removeEventListener) this[detacher].listen(onDestruction,[],this);
 
     if(Setter.is(data[i])){
 
@@ -99,7 +100,7 @@ Object.prototype[define](apply,function(data,c){
       this[connections].set(i,conn);
     }
 
-    if(aD && this.addEventListener) this.addEventListener('destruction',onDestruction,false);
+    if(aD && this.addEventListener) this[detacher].listen(onDestruction,[],this);
     if(Getter.is(data[i]) || Setter.is(data[i])) continue;
 
     if(Setter.is(this[i])) this[i].value = data[i];
