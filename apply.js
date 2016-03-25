@@ -13,7 +13,8 @@ var Setter = require('y-setter'),
     events = [
       'input','change','submit','reset',
       'keydown','keyup','keypress',
-      'click','mousedown','mouseup','mouseover','mouseout',
+      'click','mousedown','mouseup','mouseover','mouseout','mousemove',
+      'touchstart','touchend','touchmove','touchcancel',
       'resize','focus','blur','scroll','load',
       'animationstart','animationend','animationiteration','transitionend',
       'digestion'
