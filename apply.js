@@ -7,6 +7,8 @@ var Setter = require('y-setter'),
     setters = Symbol(),
     connections = Symbol(),
     observer = Symbol(),
+    bubbleHandler = Symbol(),
+    captureHandler = Symbol(),
 
     events = [
       'input','change','submit','reset',
@@ -127,9 +129,9 @@ function onDestruction(){
 }
 
 function listener(){
-  var s = this[setters];
-  digest(s,this);
-  setTimeout(digest,0,s,this);
+  var s = this.that[setters];
+  digest(s,this.that);
+  setTimeout(digest,0,s,this.that);
 }
 
 function digest(s,that){
@@ -140,13 +142,45 @@ function digest(s,that){
 function attach(that){
   var i,bind;
 
-  for(i = 0;i < events.length;i++) that.addEventListener(events[i],listener,false);
+  that[captureHandler] = {
+    handleEvent: listener,
+    that: that
+  };
+
+  that[bubbleHandler] = {
+    handleEvent: listener,
+    that: that
+  };
+
+  for(i = 0;i < events.length;i++){
+    that.addEventListener(events[i],that[bubbleHandler],false);
+    that.addEventListener(events[i],that[captureHandler],true);
+  }
+
+  if(global.addEventListener) for(i = 0;i < events.length;i++){
+    global.addEventListener(events[i],that[bubbleHandler],false);
+    global.addEventListener(events[i],that[captureHandler],true);
+  }
 
   if(global.MutationObserver && that instanceof global.Node){
     bind = bind || listener.bind(that);
     that[observer] = new MutationObserver(bind);
 
     that[observer].observe(that,{
+      childList: true,
+      attributes: true,
+      characterData: true,
+      subtree: true
+    });
+
+    if(global.document && global.document.body) that[observer].observe(document.body,{
+      childList: true,
+      attributes: true,
+      characterData: true,
+      subtree: true
+    });
+
+    if(global.document && global.document.head) that[observer].observe(document.body,{
       childList: true,
       attributes: true,
       characterData: true,
@@ -160,7 +194,15 @@ function attach(that){
 function detach(that){
   var i;
 
-  for(i = 0;i < events.length;i++) that.removeEventListener(events[i],listener,false);
+  for(i = 0;i < events.length;i++){
+    that.removeEventListener(events[i],that[bubbleHandler],false);
+    that.removeEventListener(events[i],that[captureHandler],true);
+  }
+
+  if(global.removeEventListener) for(i = 0;i < events.length;i++){
+    global.removeEventListener(events[i],that[bubbleHandler],false);
+    global.removeEventListener(events[i],that[captureHandler],true);
+  }
 
   if(that[observer]){
     that[observer].disconnect();
