@@ -14,7 +14,7 @@ var Setter = require('y-setter'),
       'input','change','submit','reset',
       'keydown','keyup','keypress',
       'click','mousedown','mouseup','mouseover','mouseout',
-      'resize','focus','blur','scroll',
+      'resize','focus','blur','scroll','load',
       'animationstart','animationend','animationiteration','transitionend',
       'digestion'
     ],
