@@ -163,7 +163,7 @@ function attach(that){
   }
 
   if(global.MutationObserver && that instanceof global.Node){
-    bind = bind || listener.bind(that);
+    bind = bind || listener.bind({that: that});
     that[observer] = new MutationObserver(bind);
 
     that[observer].observe(that,{
