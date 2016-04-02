@@ -137,6 +137,7 @@ function listener(){
 
 function digest(s,that){
   var e;
+  if(that[setters] != s) return;
   for(e of s.entries()) e[1].value = that[e[0]];
 }
 
