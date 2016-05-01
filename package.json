@@ -1,6 +1,6 @@
 {
   "name": "u-proto",
-  "version": "6.4.3",
+  "version": "6.4.4",
   "description": "Useful prototype extensions",
   "dependencies": {
     "u-css": "^2.0.4",
