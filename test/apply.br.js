@@ -174,7 +174,7 @@ t('apply',function(){
     assert.strictEqual(div.style.color,'red');
 
     div[apply]({style: {color: null}});
-    assert(!div.style.color);
+    assert.strictEqual(div.style.color,'');
 
     div[apply]({style: {color: 'black'}});
     assert.strictEqual(div.style.color,'black');

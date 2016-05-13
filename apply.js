@@ -20,7 +20,7 @@ var Setter = require('y-setter'),
       'digestion'
     ],
 
-    getKey,getValue,cssAssign,watcher;
+    getPair,cssAssign,watcher;
 
 Object.prototype[define](apply,function(data,c){
   var keys = Object.keys(data),
@@ -215,8 +215,7 @@ function detach(that){
 
 if(global.CSSStyleDeclaration){
 
-  getKey = require('u-css/get-key');
-  getValue = require('u-css/get-value');
+  getPair = require('u-css/get-pair');
 
   CSSStyleDeclaration.prototype[define](apply,function(data,c){
     var keys = Object.keys(data),
@@ -252,8 +251,8 @@ if(global.CSSStyleDeclaration){
   });
 
   cssAssign = function(obj,k,v){
-    var i = getKey(k);
-    obj[i] = getValue(i,v);
+    [k,v] = getPair(k,v);
+    obj[k] = v;
   };
 
   watcher = function(v,ov,d,obj,k){
