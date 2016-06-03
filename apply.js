@@ -84,9 +84,8 @@ Object.prototype[define](apply,function(data,c){
         }
 
         this[setters].set(i,data[i]);
-        this[i] = data[i].value;
 
-      }else this[i] = data[i].value;
+      }
 
     }
 

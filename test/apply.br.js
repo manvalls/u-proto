@@ -206,12 +206,6 @@ t('apply',function(){
     col.detach();
     setter.value = 'bar';
     assert.strictEqual(setter2.value,'foo');
-
-    obj[apply]({
-      foo: setter
-    });
-
-    assert.strictEqual(obj.foo,'bar');
   });
 
 });
