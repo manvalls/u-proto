@@ -126,6 +126,10 @@ function listener(){
   setTimeout(digest,50,s,this.that);
 }
 
+function mutationListener(mutations,obs){
+  listener.call(obs);
+}
+
 function digest(s,that){
   var e;
   if(that[setters] != s) return;
@@ -133,7 +137,7 @@ function digest(s,that){
 }
 
 function attach(that){
-  var i,bind;
+  var i;
 
   that[captureHandler] = {
     handleEvent: listener,
@@ -144,9 +148,9 @@ function attach(that){
   if(global.addEventListener) for(i = 0;i < globalEvents.length;i++) global.addEventListener(globalEvents[i],that[captureHandler],true);
 
   if(global.MutationObserver && that instanceof global.Node){
-    bind = bind || listener.bind({that: that});
-    that[observer] = new MutationObserver(bind);
 
+    that[observer] = new MutationObserver(mutationListener);
+    that[observer].that = that;
     that[observer].observe(that,{
       childList: true,
       attributes: true,
