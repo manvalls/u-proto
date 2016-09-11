@@ -7,7 +7,6 @@ var t = require('u-test'),
     Hybrid = Setter.Hybrid,
 
     Detacher = require('detacher'),
-    detacher = require('u-elem/detacher'),
     apply = require('../apply.js');
 
 t('apply',function(){
@@ -25,13 +24,10 @@ t('apply',function(){
     });
 
     t('Nested',function(){
-      var obj = {};
+      var obj = {test: {}};
 
-      obj[apply]({self: obj});
-      assert.strictEqual(obj.self,obj);
-
-      obj[apply]({self: {foo: 'bar'}});
-      assert.strictEqual(obj.foo,'bar');
+      obj[apply]({test: {foo: 'bar'}});
+      assert.strictEqual(obj.test.foo,'bar');
     });
 
     t('Using a getter',function(){
@@ -75,9 +71,8 @@ t('apply',function(){
     assert.strictEqual(i.checked,false);
 
     i.click();
-    yield wait(10);
 
-    assert.strictEqual(i.checked,true);
+    assert.strictEqual(h.value,true);
     h.value = false;
     assert.strictEqual(i.checked,false);
 
@@ -86,16 +81,15 @@ t('apply',function(){
     assert.strictEqual(i.checked,false);
 
     h.value = true;
-    assert.strictEqual(i.checked,false);
+    assert.strictEqual(i.checked,true);
 
     h2.value = true;
     assert.strictEqual(i.checked,true);
 
     i.click();
-    yield wait(10);
 
     assert.strictEqual(i.checked,false);
-    assert.strictEqual(h.value,true);
+    assert.strictEqual(h.value,false);
     assert.strictEqual(h2.value,false);
 
     c.detach();
@@ -107,24 +101,12 @@ t('apply',function(){
     assert.strictEqual(i.h,true);
 
     i.click();
-    yield wait(10);
 
     assert.strictEqual(i.checked,false);
     assert.strictEqual(h2.value,false);
-    assert.strictEqual(i.h,true);
-
-    h.value = false;
     assert.strictEqual(i.h,false);
 
-    i[detacher].detach();
-
-    i.click();
-    yield wait(100);
-
-    assert.strictEqual(i.checked,true);
-    assert.strictEqual(h2.value,false);
-
-    h.value = true;
+    h.value = false;
     assert.strictEqual(i.h,false);
   });
 
@@ -152,7 +134,6 @@ t('apply',function(){
         c = new Detacher();
 
     h.value = 'black';
-
     div[apply]({style: {color: h}});
 
     assert.strictEqual(div.style.color,'black');
@@ -164,7 +145,7 @@ t('apply',function(){
     assert.strictEqual(div.style.color,'black');
 
     h.value = 'green';
-    assert.strictEqual(div.style.color,'black');
+    assert.strictEqual(div.style.color,'green');
 
     h2.value = 'red';
     assert.strictEqual(div.style.color,'red');
@@ -178,34 +159,6 @@ t('apply',function(){
 
     div[apply]({style: {color: 'black'}});
     assert.strictEqual(div.style.color,'black');
-  });
-
-  t('Object with setters and getters',function(){
-    var setter = new Setter(),
-        setter2 = new Setter(),
-        col = new Detacher(),
-        obj = {
-          setter: new Setter(),
-          getter: setter.getter
-        };
-
-    obj[apply]({
-      setter: 5
-    });
-
-    assert.strictEqual(obj.setter.value,5);
-
-    obj[apply]({
-      getter: setter2,
-      setter: setter2.getter
-    },col);
-
-    setter.value = 'foo';
-    assert.strictEqual(setter2.value,'foo');
-    assert.strictEqual(obj.setter.value,'foo');
-    col.detach();
-    setter.value = 'bar';
-    assert.strictEqual(setter2.value,'foo');
   });
 
 });

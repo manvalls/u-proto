@@ -1,224 +1,66 @@
 var Setter = require('y-setter'),
     Getter = Setter.Getter,
-    detacher = require('u-elem/detacher'),
-
+    getGetter = require('./apply/getGetter'),
     define = require('./define.js'),
     apply = module.exports = Symbol(),
-    setters = Symbol(),
-    connections = Symbol(),
-    observer = Symbol(),
-    captureHandler = Symbol(),
+    getPair;
 
-    events = ['input','change','scroll'],
-    globalEvents = ['resize'],
+// apply
 
-    getPair,cssAssign,watcher;
-
-Object.prototype[define](apply,function(data,c){
-  var keys = Object.keys(data),
-      i,j,conn,
-      aD,dD;
-
-  for(j = 0;j < keys.length;j++){
-    i = keys[j];
-
-    if(data[i] && data[i].constructor == Object && typeof this[i] == 'object'){
-      this[i][apply](data[i],c);
-      continue;
-    }
-
-    if(this[setters] && this[setters].has(i)){
-
-      this[setters].delete(i);
-
-      if(!this[setters].size){
-        dD = !this[connections];
-        delete this[setters];
-        detach(this);
-      }
-
-    }
-
-    if(this[connections] && this[connections].has(i)){
-
-      this[connections].get(i).detach();
-      this[connections].delete(i);
-
-      if(!this[connections].size){
-        dD = !this[setters];
-        delete this[connections];
-      }
-
-    }
-
-    if(dD && this.removeEventListener) this[detacher].listen(onDestruction,[],this);
-
-    if(Setter.is(data[i])){
-
-      if(Getter.is(this[i])){
-
-        conn = this[i].connect(data[i]);
-        if(c) c.add(conn);
-
-        if(!this[connections]){
-          this[connections] = new Map();
-          aD = !this[setters];
-        }
-
-        this[connections].set(i,conn);
-
-      }else if(this.addEventListener){
-
-        if(!this[setters]){
-          this[setters] = new Map();
-          aD = !this[connections];
-          attach(this);
-        }
-
-        this[setters].set(i,data[i]);
-
-      }
-
-    }
-
-    if(Getter.is(data[i])){
-      if(Setter.is(this[i])) conn = data[i].connect(this[i]);
-      else conn = data[i].connect(this,i);
-
-      if(c) c.add(conn);
-      if(!this[connections]){
-        this[connections] = new Map();
-        aD = aD || !this[setters];
-      }
-
-      this[connections].set(i,conn);
-    }
-
-    if(aD && this.addEventListener) this[detacher].listen(onDestruction,[],this);
-    if(Getter.is(data[i]) || Setter.is(data[i])) continue;
-
-    if(Setter.is(this[i])) this[i].value = data[i];
-    else this[i] = data[i];
-
-  }
-
-  return this;
+Object.prototype[define](apply,function(data,detacher){
+  runApply([],this,data,detacher);
 });
 
-function onDestruction(){
-  var conn;
+function runApply(baseProps,base,data,detacher){
+  var key,keys,d;
 
-  if(this[setters]){
-    delete this[setters];
-    detach(this);
+  for(key of Object.keys(data)){
+
+    keys = baseProps.concat(key);
+
+    // Nested object
+
+    if(data[key] && data[key].constructor == Object) runApply(keys,base,data[key],detacher);
+
+    else if(Getter.is(data[key]) || Setter.is(data[key])){
+
+      // Getter
+
+      if(Getter.is(data[key])){
+        d = data[key].pipe(base,keys,{
+          set: setData,
+          base: base
+        });
+
+        if(detacher) detacher.add(d);
+      }
+
+      // Setter
+
+      if(Setter.is(data[key])){
+        d = getGetter(base,keys).pipe(data[key]);
+        if(detacher) detacher.add(d);
+      }
+
+    }else recursiveSetData(base,keys,data[key]);
+
   }
 
-  if(this[connections]){
-    for(conn of this[connections].values()) conn.detach();
-    delete this[connections];
-  }
-
 }
 
-function listener(){
-  var s = this.that[setters];
-  digest(s,this.that);
-  setTimeout(digest,50,s,this.that);
-}
+if(global.CSSStyleDeclaration) getPair = require('u-css/get-pair');
 
-function mutationListener(mutations,obs){
-  listener.call(obs);
-}
-
-function digest(s,that){
-  var e;
-  if(that[setters] != s) return;
-  for(e of s.entries()) e[1].value = that[e[0]];
-}
-
-function attach(that){
+function recursiveSetData(obj,keys,value){
   var i;
 
-  that[captureHandler] = {
-    handleEvent: listener,
-    that: that
-  };
-
-  for(i = 0;i < events.length;i++) that.addEventListener(events[i],that[captureHandler],true);
-  if(global.addEventListener) for(i = 0;i < globalEvents.length;i++) global.addEventListener(globalEvents[i],that[captureHandler],true);
-
-  if(global.MutationObserver && that instanceof global.Node){
-
-    that[observer] = new MutationObserver(mutationListener);
-    that[observer].that = that;
-    that[observer].observe(that,{
-      childList: true,
-      attributes: true,
-      characterData: true,
-      subtree: true
-    });
-
-  }
-
+  for(i = 0;i < keys.length - 1;i++) obj = obj[keys[i]] || {};
+  setData.call({base: obj},obj,keys[i],value);
 }
 
-function detach(that){
-  var i;
-
-  for(i = 0;i < events.length;i++) that.removeEventListener(events[i],that[captureHandler],true);
-  if(global.removeEventListener) for(i = 0;i < globalEvents.length;i++) global.removeEventListener(globalEvents[i],that[captureHandler],true);
-
-  if(that[observer]){
-    that[observer].disconnect();
-    delete that[observer];
+function setData(obj,key,value){
+  if(global.CSSStyleDeclaration && obj instanceof global.CSSStyleDeclaration) [key,value] = getPair(key,value);
+  if(obj[key] !== value){
+    obj[key] = value;
+    getGetter.check(this.base);
   }
-
-}
-
-if(global.CSSStyleDeclaration){
-
-  getPair = require('u-css/get-pair');
-
-  CSSStyleDeclaration.prototype[define](apply,function(data,c){
-    var keys = Object.keys(data),
-        i,j,conn;
-
-    for(j = 0;j < keys.length;j++){
-      i = keys[j];
-
-      if(this[connections] && this[connections].has(i)){
-        this[connections].get(i).detach();
-        this[connections].delete(i);
-        if(!this[connections].size) delete this[connections];
-      }
-
-      if(!data[i]){
-        cssAssign(this,i,data[i]);
-        continue;
-      }
-
-      if(Getter.is(data[i])){
-        conn = data[i].watch(watcher,this,i);
-        if(c) c.add(conn);
-
-        this[connections] = this[connections] || new Map();
-        this[connections].set(i,conn);
-        continue;
-      }
-
-      cssAssign(this,i,data[i]);
-    }
-
-    return this;
-  });
-
-  cssAssign = function(obj,k,v){
-    [k,v] = getPair(k,v);
-    obj[k] = v;
-  };
-
-  watcher = function(v,ov,d,obj,k){
-    cssAssign(obj,k,v);
-  };
-
 }
