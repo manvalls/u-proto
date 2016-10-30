@@ -3,9 +3,9 @@
   "version": "7.0.1",
   "description": "Useful prototype extensions",
   "dependencies": {
-    "u-css": "^2.1.6",
-    "y-timers": "^1.1.5",
-    "y-setter": "^6.11.0"
+    "greens": "^1.0.0",
+    "y-setter": "^6.11.0",
+    "y-timers": "^1.1.5"
   },
   "devDependencies": {
     "detacher": "^2.0.4",

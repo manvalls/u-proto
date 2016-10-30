@@ -48,7 +48,7 @@ function runApply(baseProps,base,data,detacher){
 
 }
 
-if(global.CSSStyleDeclaration) getPair = require('u-css/get-pair');
+if(global.CSSStyleDeclaration) getPair = require('greens/get-pair');
 
 function recursiveSetData(obj,keys,value){
   var i;
