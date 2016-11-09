@@ -58,9 +58,19 @@ function recursiveSetData(obj,keys,value){
 }
 
 function setData(obj,key,value){
-  if(global.CSSStyleDeclaration && obj instanceof global.CSSStyleDeclaration) [key,value] = getPair(key,value);
-  if(obj[key] !== value){
+  var priority = '';
+
+  if(global.CSSStyleDeclaration && obj instanceof global.CSSStyleDeclaration){
+
+    if(value && value instanceof Array) [value,priority] = value;
+    [key,value] = getPair(key,value);
+    obj.setProperty(key,value,priority);
+
+  }else if(obj[key] !== value){
+
     obj[key] = value;
     getGetter.check(this.base);
+
   }
+
 }

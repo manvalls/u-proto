@@ -157,8 +157,9 @@ t('apply',function(){
     div[apply]({style: {color: null}});
     assert.strictEqual(div.style.color,'');
 
-    div[apply]({style: {color: 'black'}});
+    div[apply]({style: {color: ['black','important']}});
     assert.strictEqual(div.style.color,'black');
+    assert.strictEqual(div.style.getPropertyPriority('color'),'important');
   });
 
 });

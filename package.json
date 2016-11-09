@@ -3,13 +3,13 @@
   "version": "7.0.2",
   "description": "Useful prototype extensions",
   "dependencies": {
-    "greens": "^1.0.0",
-    "y-setter": "^6.11.0",
+    "greens": "^1.0.1",
+    "y-setter": "^6.12.4",
     "y-timers": "^1.1.5"
   },
   "devDependencies": {
-    "detacher": "^2.0.4",
-    "u-test": "^3.7.5"
+    "detacher": "^2.0.5",
+    "u-test": "^3.8.9"
   },
   "scripts": {
     "test": "u-test"
