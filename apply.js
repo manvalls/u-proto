@@ -58,19 +58,20 @@ function recursiveSetData(obj,keys,value){
 }
 
 function setData(obj,key,value){
-  var priority = '';
+  var priority = '',
+      different = false,
+      cssDifferent = false;
 
   if(global.CSSStyleDeclaration && obj instanceof global.CSSStyleDeclaration){
-
     if(value && value instanceof Array) [value,priority] = value;
     [key,value] = getPair(key,value);
+
+    cssDifferent = obj[key] !== value;
     obj.setProperty(key,value,priority);
-
-  }else if(obj[key] !== value){
-
-    obj[key] = value;
-    getGetter.check(this.base);
-
   }
+
+  different = obj[key] !== value
+  if(different) obj[key] = value;
+  if(different || cssDifferent) getGetter.check(this.base);
 
 }
