@@ -12,7 +12,7 @@ Object.prototype[define](apply,function(data,detacher){
 });
 
 function runApply(baseProps,base,data,detacher){
-  var key,keys,d;
+  var key,keys,d,setter;
 
   for(key of Object.keys(data)){
 
@@ -38,8 +38,15 @@ function runApply(baseProps,base,data,detacher){
       // Setter
 
       if(Setter.is(data[key])){
-        d = getGetter(base,keys).pipe(data[key]);
+
+        if(Getter.is(data[key])) setter = {
+          set: setHybrid,
+          hybrid: data[key]
+        };
+
+        d = getGetter(base,keys).pipe(data[key],null,setter);
         if(detacher) detacher.add(d);
+
       }
 
     }else recursiveSetData(base,keys,data[key]);
@@ -74,4 +81,16 @@ function setData(obj,key,value){
   if(different) obj[key] = value;
   if(different || cssDifferent) getGetter.check(this.base);
 
+}
+
+function normalSet(obj,key,value){
+  if(obj[key] !== value) obj[key] = value;
+}
+
+function setHybrid(obj,key,value){
+  this.set = normalSet;
+  if(this.hybrid.value !== value){
+    if(this.hybrid.value !== undefined) this.hybrid.update();
+    else this.hybrid.value = value;
+  }
 }
