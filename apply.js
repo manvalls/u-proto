@@ -41,6 +41,7 @@ function runApply(baseProps,base,data,detacher){
 
         if(Getter.is(data[key])) setter = {
           set: setHybrid,
+          ignoredValue: undefined,
           hybrid: data[key]
         };
 
@@ -84,11 +85,16 @@ function setData(obj,key,value){
 }
 
 function normalSet(obj,key,value){
-  if(obj[key] !== value) obj[key] = value;
+  if(value === undefined){
+    this.set = setHybrid;
+    this.ignoredValue = undefined;
+  }else if(obj[key] !== value) obj[key] = value;
 }
 
 function setHybrid(obj,key,value){
   this.set = normalSet;
+  this.ignoredValue = {};
+
   if(this.hybrid.value !== value){
     if(this.hybrid.value !== undefined) this.hybrid.update();
     else this.hybrid.value = value;
