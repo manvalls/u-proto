@@ -113,18 +113,46 @@ t('apply',function(){
   t('HTMLDivElement',function*(){
     var span = document.createElement('span'),
         width = new Hybrid(),
+        html = new Hybrid(),
+        children = new Hybrid(),
+        value = new Hybrid(),
+        scroll = new Hybrid(),
+        d = new Detacher(),
         w1;
 
-    span[apply]({ offsetWidth: width });
-    span.textContent = 'foo';
+    span[apply]({ offsetWidth: width, innerHTML: html, childElementCount: children, scrollTop: scroll, value }, d);
     document.body.appendChild(span);
-    yield wait(10);
+    html.value = '<p>1</p><p>2</p>';
+    yield wait(100);
 
+    assert.strictEqual(children.value, 2);
+    html.value = '<p>1</p><p>2</p><p>3</p>';
+    yield wait(100);
+
+    assert.strictEqual(children.value, 3);
+    html.value = 'foo';
+
+    span = document.createElement('span');
+    span[apply]({ offsetWidth: width, innerHTML: html, childElementCount: children }, d);
+    document.body.appendChild(span);
+    yield wait(100);
+
+    assert.strictEqual(html.value, 'foo');
     w1 = width.value;
     span.textContent += 'bar';
-    yield wait(10);
+    yield wait(100);
 
+    assert.strictEqual(html.value, 'foobar');
     assert(width.value > w1);
+    w1 = width.value;
+    d.detach();
+
+    span.textContent += 'bar';
+    yield wait(100);
+    assert.strictEqual(html.value, 'foobar');
+    assert.strictEqual(width.value,w1);
+    assert.strictEqual(value.value,undefined);
+    assert.strictEqual(scroll.value,0);
   });
 
   t('CSSStyleDeclaration',function(){

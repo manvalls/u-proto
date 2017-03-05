@@ -1,77 +1,152 @@
 var Resolver = require('y-resolver'),
     {Yielded} = Resolver,
     {Getter} = require('y-setter'),
-    frame = require('y-timers/frame'),
 
-    events = ['input','change','click','keydown','focus'],
-    globalEvents = ['resize','scroll'],
-
-    listeners = Symbol(),
-    observer = Symbol(),
-    resolver = Symbol();
+    parent = Symbol(),
+    path = Symbol(),
+    context = Symbol(),
+    contexts = Symbol();
 
 module.exports = function(base,keys){
-  return new Getter(getValue,[base,keys],getYielded,[base],{},getFrozen,[base]);
+  return new ElementGetter(base, keys);
 };
 
 module.exports.check = function(base){
-  if(base[resolver]) handleEvent.call({base});
+  var ctx;
+  if(base[contexts]) for(ctx of base[contexts]) handleEvent.call({base,ctx});
 };
 
-// Getter handlers
+class ElementGetter extends Getter{
 
-function getYielded(base,somethingChanged){
-  var event,document,window,element;
+  constructor(base, keys){
+    super();
 
-  if(!canBeListened(base)) return new Yielded();
-  base[resolver] = base[resolver] || new Resolver();
-  base[listeners] = base[listeners] || [];
-
-  if(!base[listeners].length){
-    document = base.ownerDocument || {};
-    window = document.defaultView || document.parentWindow || base;
-
-    element = base;
-    for(event of events) attach({handleEvent,base,event,window,element});
-
-    if(canBeListened(window)){
-      element = window;
-      for(event of globalEvents) attach({handleEvent,base,event,window,element});
-    }
-
-    if(global.MutationObserver && base instanceof global.Node){
-
-      base[observer] = new MutationObserver(mutationListener);
-      base[observer].base = base;
-      base[observer].observe(base,{
-        childList: true,
-        attributes: true,
-        characterData: true,
-        subtree: true
-      });
-
-    }
-
+    this[context] = {};
+    this[parent] = base;
+    this[path] = keys;
   }
 
-  if(somethingChanged && !this.frame){
-    this.frame = frame();
-    this.frame.listen(removeFrame,[],this);
+  get value(){
+    var base = this[parent],
+        keys = this[path],
+        key;
+
+    for(key of keys) base = (base || {})[key];
+    return base;
   }
 
-  if(this.frame) return Resolver.race([base[resolver].yielded,this.frame]);
-  return base[resolver].yielded;
-}
+  touched(){
+    var base = this[parent],
+        keys = this[path],
+        ctx = this[context],
+        event,document,window,element,
+        events,globalEvents,mutations;
 
-function getValue(base,keys){
-  var key;
-  for(key of keys) base = (base || {})[key];
-  return base;
-}
+    if(!canBeListened(base)) return new Yielded();
+    ctx.resolver = ctx.resolver || new Resolver();
+    base[contexts] = base[contexts] || new Set();
+    base[contexts].add(ctx);
 
-function getFrozen(base){
-  if(!canBeListened(base)) return Resolver.accept();
-  return new Yielded();
+    if(!ctx.listeners){
+      ctx.listeners = [];
+      document = base.ownerDocument || {};
+      window = document.defaultView || document.parentWindow || base;
+
+      switch(keys[keys.length - 1]){
+
+        case 'files':
+        case 'value':
+        case 'valueAsDate':
+        case 'valueAsNumber':
+          events = ['input', 'propertychange', 'change'];
+          globalEvents = [];
+          break;
+
+        case 'offsetWidth':
+        case 'scrollWidth':
+        case 'clientWidth':
+        case 'offsetHeight':
+        case 'scrollHeight':
+        case 'clientHeight':
+
+          events = [];
+          globalEvents = ['resize'];
+          mutations = {
+            childList: true,
+            attributes: true,
+            characterData: true,
+            subtree: true
+          };
+
+          break;
+
+        case 'scrollLeft':
+        case 'scrollTop':
+          events = ['scroll'];
+          globalEvents = [];
+          break;
+
+        case 'checked':
+          events = ['click','change'];
+          globalEvents = [];
+          break;
+
+        case 'innerHTML':
+        case 'outerHTML':
+        case 'innerText':
+        case 'textContent':
+
+          events = ['input', 'propertychange', 'change'];
+          globalEvents = [];
+          mutations = {
+            childList: true,
+            attributes: true,
+            characterData: true,
+            subtree: true
+          };
+
+          break;
+
+        case 'childElementCount':
+          events = [];
+          globalEvents = [];
+          mutations = {childList: true};
+          break;
+
+        default:
+          events = [];
+          globalEvents = [];
+          break;
+
+      }
+
+      element = base;
+      for(event of events) attach({handleEvent,ctx,base,event,window,element});
+
+      if(canBeListened(window)){
+        element = window;
+        for(event of globalEvents) attach({handleEvent,ctx,base,event,window,element});
+      }
+
+      if(mutations && global.MutationObserver && base instanceof global.Node){
+
+        ctx.observer = new MutationObserver(mutationListener);
+        ctx.observer.ctx = ctx;
+        ctx.observer.base = base;
+        ctx.observer.observe(base,mutations);
+
+      }
+
+    }
+
+    return ctx.resolver.yielded;
+  }
+
+  frozen(){
+    if(!canBeListened(this[parent])) return Resolver.accept();
+    return new Yielded();
+  }
+
 }
 
 // Utils
@@ -81,9 +156,9 @@ function canBeListened(base){
 }
 
 function attach(object){
-  object.base[listeners].push(object);
+  object.ctx.listeners.push(object);
   if(object.element.addEventListener) object.element.addEventListener(object.event,object,false);
-  else object.element.attachEvent('on' + event,object.listener = event => object.handleEvent(object.event));
+  else object.element.attachEvent('on' + event,object.listener = event => object.handleEvent(event));
 }
 
 function detach(object){
@@ -93,28 +168,26 @@ function detach(object){
 
 // Listeners
 
-function removeFrame(){
-  delete this.frame;
-}
-
 function mutationListener(mutations,obs){
   handleEvent.call(obs);
 }
 
 function handleEvent(){
-  var res = this.base[resolver],
+  var res = this.ctx.resolver,
       listener;
 
-  delete this.base[resolver];
+  if(!res) return;
+  delete this.ctx.resolver;
   res.accept();
 
-  if(!this.base[resolver]){
-    for(listener of this.base[listeners]) detach(listener);
-    delete this.base[listeners];
+  if(!this.ctx.resolver){
+    for(listener of this.ctx.listeners) detach(listener);
+    delete this.ctx.listeners;
+    this.base[contexts].delete(this.ctx);
 
-    if(this.base[observer]){
-      this.base[observer].disconnect();
-      delete this.base[observer];
+    if(this.ctx.observer){
+      this.ctx.observer.disconnect();
+      delete this.ctx.observer;
     }
   }
 

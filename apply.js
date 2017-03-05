@@ -45,7 +45,7 @@ function runApply(baseProps,base,data,detacher){
           hybrid: data[key]
         };
 
-        d = getGetter(base,keys).pipe(data[key],null,setter);
+        d = getGetter(base,keys).bounce().pipe(data[key],null,setter);
         if(detacher) detacher.add(d);
 
       }
