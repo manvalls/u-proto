@@ -1,6 +1,6 @@
 {
   "name": "u-proto",
-  "version": "7.1.4",
+  "version": "7.1.5",
   "description": "Useful prototype extensions",
   "dependencies": {
     "greens": "^1.0.6",
