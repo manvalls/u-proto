@@ -120,6 +120,13 @@ class ElementGetter extends Getter{
 
       }
 
+      if(keys.length > 1 && keys[0] != 'style') mutations = {
+        childList: true,
+        attributes: true,
+        characterData: true,
+        subtree: true
+      };
+
       element = base;
       for(event of events) attach({handleEvent,ctx,base,event,window,element});
 
