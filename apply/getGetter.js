@@ -58,6 +58,8 @@ class ElementGetter extends Getter{
         case 'value':
         case 'valueAsDate':
         case 'valueAsNumber':
+        case 'selectedOptions':
+        case 'selectedIndex':
           events = ['input', 'propertychange', 'change'];
           globalEvents = [];
           break;
