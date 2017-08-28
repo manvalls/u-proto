@@ -4,11 +4,11 @@
   "description": "Useful prototype extensions",
   "dependencies": {
     "greens": "^1.0.6",
-    "y-setter": "^7.11.0",
+    "y-setter": "^8.0.1",
     "y-timers": "^1.1.10"
   },
   "devDependencies": {
-    "detacher": "^2.0.10",
+    "detacher": "^2.0.11",
     "u-test": "^3.8.11"
   },
   "scripts": {
